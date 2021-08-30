@@ -1,2 +1,4 @@
 *.pyc
 junk/*
+output/*
+url_file.txt
