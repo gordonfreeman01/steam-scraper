@@ -2,7 +2,7 @@ import logging
 import re
 from w3lib.url import canonicalize_url, url_query_cleaner
 
-from scrapy.http import FormRequest
+from scrapy.http import FormRequest, Request
 from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
 
@@ -91,14 +91,24 @@ class ProductSpider(CrawlSpider):
              restrict_css='.search_pagination_right'))
     ]
 
-    def __init__(self, steam_id=None, *args, **kwargs):
+    def __init__(self, url_file=None, steam_id=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.url_file = url_file
         self.steam_id = steam_id
+
+    def read_urls(self):
+        with open(self.url_file, 'r') as f:
+            for url in f:
+                url = url.strip()
+                if url:
+                    yield Request(url, callback=self.parse_product)
 
     def start_requests(self):
         if self.steam_id:
             yield Request(f'http://store.steampowered.com/app/{self.steam_id}/',
                           callback=self.parse_product)
+        elif self.url_file:
+            yield from self.read_urls()
         else:
             yield from super().start_requests()
 
