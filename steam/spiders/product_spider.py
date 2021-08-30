@@ -2,7 +2,7 @@ import logging
 import re
 from w3lib.url import canonicalize_url, url_query_cleaner
 
-from scrapy.http import FormRequest
+from scrapy.http import FormRequest, Request
 from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
 
