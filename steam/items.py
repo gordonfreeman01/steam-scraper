@@ -3,7 +3,7 @@ import logging
 
 import scrapy
 from scrapy.loader import ItemLoader
-from scrapy.loader.processors import Compose, Join, MapCompose, TakeFirst
+from itemloaders.processors import Compose, Join, MapCompose, TakeFirst
 
 logger = logging.getLogger(__name__)
 
@@ -107,6 +107,10 @@ class ProductItem(scrapy.Item):
         output_processor=Compose(TakeFirst(), StripText(), str_to_int)
     )
     early_access = scrapy.Field()
+    short_description = scrapy.Field()
+    long_description = scrapy.Field()
+    cover_image_url = scrapy.Field()
+    game_image_url = scrapy.Field()
 
 
 class ReviewItem(scrapy.Item):
