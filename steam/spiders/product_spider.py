@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 def load_product(response):
+    #TODO: fix developer, publisher, release date; add short description, long description
     """Load a ProductItem from the product page response."""
     loader = ProductItemLoader(item=ProductItem(), response=response)
 
