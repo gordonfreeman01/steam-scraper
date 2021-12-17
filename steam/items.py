@@ -3,7 +3,7 @@ import logging
 
 import scrapy
 from scrapy.loader import ItemLoader
-from scrapy.loader.processors import Compose, Join, MapCompose, TakeFirst
+from itemloaders.processors import Compose, Join, MapCompose, TakeFirst
 
 logger = logging.getLogger(__name__)
 
@@ -75,8 +75,12 @@ class ProductItem(scrapy.Item):
     genres = scrapy.Field(
         output_processor=Compose(TakeFirst(), lambda x: x.split(','), MapCompose(StripText()))
     )
-    developer = scrapy.Field()
-    publisher = scrapy.Field()
+    developer = scrapy.Field(
+        output_processor=MapCompose(StripText())
+    )
+    publisher = scrapy.Field(
+        output_processor=MapCompose(StripText())
+    )
     release_date = scrapy.Field(
         output_processor=Compose(TakeFirst(), StripText(), standardize_date)
     )
@@ -107,6 +111,17 @@ class ProductItem(scrapy.Item):
         output_processor=Compose(TakeFirst(), StripText(), str_to_int)
     )
     early_access = scrapy.Field()
+
+    short_description = scrapy.Field(
+        output_processor=Compose(TakeFirst(), StripText())
+    )
+
+    long_description = scrapy.Field(
+        output_processor=Compose(TakeFirst(), StripText())
+    )
+
+    cover_image_url = scrapy.Field()
+    game_image_url = scrapy.Field()
 
 
 class ReviewItem(scrapy.Item):

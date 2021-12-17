@@ -30,22 +30,25 @@ def load_product(response):
     details = response.css('.details_block').extract_first()
     try:
         details = details.split('<br>')
-
         for line in details:
             line = re.sub('<[^<]+?>', '', line)  # Remove tags.
             line = re.sub('[\r\t\n]', '', line).strip()
             for prop, name in [
                 ('Title:', 'title'),
-                ('Genre:', 'genres'),
-                ('Developer:', 'developer'),
-                ('Publisher:', 'publisher'),
-                ('Release Date:', 'release_date')
+                ('Genre:', 'genres')
             ]:
                 if prop in line:
                     item = line.replace(prop, '').strip()
                     loader.add_value(name, item)
     except:  # noqa E722
         pass
+    
+    #Fallback CSS fetch for developer = response.css('.summary#developers_list ::text').extract()
+    developer = response.xpath('(//div[contains(@class, "dev_row")]/div[contains(@class, "summary") and contains(@id,"developers_list")]/a/text())').extract()
+    loader.add_value('developer', developer)
+    publisher = response.xpath('(//div[contains(@class, "dev_row")]/div[contains(@class, "summary") and not(contains(@id,"developers_list"))]/a/text())').extract()
+    loader.add_value('publisher', publisher)
+    loader.add_css('release_date', '.release_date .date ::text')
 
     loader.add_css('app_name', '.apphub_AppName ::text')
     loader.add_css('specs', '.game_area_details_specs a ::text')
@@ -71,6 +74,20 @@ def load_product(response):
         loader.add_value('early_access', True)
     else:
         loader.add_value('early_access', False)
+
+    #short_description = re.sub('[\r\t\n]', '', response.css('.game_description_snippet ::text').extract()).strip()
+    short_description = response.css('.game_description_snippet ::text').extract()
+    loader.add_value('short_description', short_description)
+
+    #long_description = re.sub('[\t]', '', response.css('.game_area_description#game_area_description').extract()).strip()
+    long_description = response.css('.game_area_description#game_area_description').extract()
+    loader.add_value('long_description', long_description)
+
+    loader.add_xpath('cover_image_url', '//img[@class="game_header_image_full"]/@src')
+
+    game_image_url = re.sub('\.[\d]*x[\d]*\.jpg.*', '.jpg', 
+        response.xpath('//div[@id="highlight_strip"]//img[not(contains(@class,"movie_thumb"))]/@src').extract_first())
+    loader.add_value('game_image_url', game_image_url)
 
     return loader.load_item()
 
