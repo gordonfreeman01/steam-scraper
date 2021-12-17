@@ -10,6 +10,7 @@ The focus of this scraper is on fetching game product page metadata that works w
 Compared to original crawler, here are the differences:
 * Fixes:
   - Developer, publisher, release date fields work correctly
+  - Developer and publisher fields support lists of values in each field (as with current Steam layout)
   - Fixed using the steamid parameter in the product crawler to fetch just that page
 
 * Additions
@@ -62,14 +63,14 @@ In the sample below, the file is called url_file.txt and is stored in the script
 ```bash
 scrapy crawl products -a url_file=url_file.txt -o output/products_specific.jl --logfile=output/products_specific.log --loglevel=INFO -s JOBDIR=output/products_specific
 ```
-When it completes you should have metadata for all games on Steam in `output/products_specific.jl`.
+When it completes you should have metadata for all games in your URL file in `output/products_specific.jl`.
 
 ### Crawling a single product on Steam based on its AppID
 You can pass the Steam AppID for a product directly to crawl its page specifically.
 ```bash
 scrapy crawl products -a steam_id=404200 -o output/products_specific.jl --logfile=output/products_specific.log --loglevel=INFO
 ```
-When it completes you should have metadata for all games on Steam in `output/products_specific.jl`.
+When it completes you should have metadata for the game you specified in `output/products_specific.jl`.
 
 ### Sample output
 Here's some sample output:
