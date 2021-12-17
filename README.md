@@ -1,9 +1,24 @@
-# Steam Scraper
+# Steam Scraper+
 
 This repository contains [Scrapy](https://github.com/scrapy/scrapy) spiders for **crawling products** and **scraping all user-submitted reviews** from the [Steam game store](https://steampowered.com).
 A few scripts for more easily managing and deploying the spiders are included as well.
 
-This repository contains code accompanying the *Scraping the Steam Game Store* article published on the [Scrapinghub blog](https://blog.scrapinghub.com/2017/07/07/scraping-the-steam-game-store-with-scrapy/) and the [Intoli blog](https://intoli.com/blog/steam-scraper/).
+This repository forks and extends the code accompanying the *Scraping the Steam Game Store* article published on the [Scrapinghub blog](https://blog.scrapinghub.com/2017/07/07/scraping-the-steam-game-store-with-scrapy/) and the [Intoli blog](https://intoli.com/blog/steam-scraper/).
+
+The focus of this scraper is on fetching game product page metadata that works with the latest layout of Steam.
+
+Compared to original crawler, here are the differences:
+* Fixes:
+  - Developer, publisher, release date fields work correctly
+  - Fixed using the steamid parameter in the product crawler to fetch just that page
+
+* Additions
+  - Added short_description, long_description, cover_image_url and game_image_url fields
+  - Added url_file parameter to product crawler
+
+* Minor enhancements:
+  - Resolved deprecation warnings for scrapy import on the Product spider 
+  - Gitignore file extended to ignore various relevant temporary files
 
 ## Installation
 
@@ -32,31 +47,53 @@ On Ubuntu you can use [instructions posted on askubuntu.com](https://askubuntu.c
 
 The purpose of `ProductSpider` is to discover product pages on the [Steam product listing](http://store.steampowered.com/search/?sort_by=Released_DESC) and extract useful metadata from them.
 A neat feature of this spider is that it automatically navigates through Steam's age verification checkpoints.
+
+### Crawling all products on Steam
 You can initiate the multi-hour crawl with
 ```bash
 scrapy crawl products -o output/products_all.jl --logfile=output/products_all.log --loglevel=INFO -s JOBDIR=output/products_all_job -s HTTPCACHE_ENABLED=False
 ```
 When it completes you should have metadata for all games on Steam in `output/products_all.jl`.
-Here's some example output:
+
+### Crawling a batch of products on Steam based on a URL list
+You can create a plain text file with a list of Steam product URLs (one by line) and crawl those pages specifically.
+
+In the sample below, the file is called url_file.txt and is stored in the script's root folder. Prior to running this command you will need to create the "output" folder in the same location as well. In this sample, as JOBDIR is specified, the crawler can be resumed. Remove the latter parameter to disable resuming and always crawl all URLs on each run.
+```bash
+scrapy crawl products -a url_file=url_file.txt -o output/products_specific.jl --logfile=output/products_specific.log --loglevel=INFO -s JOBDIR=output/products_specific
+```
+When it completes you should have metadata for all games on Steam in `output/products_specific.jl`.
+
+### Crawling a single product on Steam based on its AppID
+You can pass the Steam AppID for a product directly to crawl its page specifically.
+```bash
+scrapy crawl products -a steam_id=404200 -o output/products_specific.jl --logfile=output/products_specific.log --loglevel=INFO
+```
+When it completes you should have metadata for all games on Steam in `output/products_specific.jl`.
+
+### Sample output
+Here's some sample output:
 ```python
 {
-  'app_name': 'Cold Fear™',
-  'developer': 'Darkworks',
-  'early_access': False,
-  'genres': ['Action'],
-  'id': '15270',
-  'metascore': 66,
-  'n_reviews': 172,
-  'price': 9.99,
-  'publisher': 'Ubisoft',
-  'release_date': '2005-03-28',
-  'reviews_url': 'http://steamcommunity.com/app/15270/reviews/?browsefilter=mostrecent&p=1',
-  'sentiment': 'Very Positive',
-  'specs': ['Single-player'],
-  'tags': ['Horror', 'Action', 'Survival Horror', 'Zombies', 'Third Person', 'Third-Person Shooter'],
-  'title': 'Cold Fear™',
-  'url': 'http://store.steampowered.com/app/15270/Cold_Fear/'
- }
+    "url": "https://store.steampowered.com/app/404200/",
+    "reviews_url": "http://steamcommunity.com/app/404200/reviews/?browsefilter=mostrecent&p=1",
+    "id": "404200",
+    "title": "WARTILE",
+    "genres": ["RPG", "Strategy"],
+    "developer": ["Playwood Project"],
+    "publisher": ["Deck13", "WhisperGames"],
+    "release_date": "8 Feb, 2018",
+    "app_name": "WARTILE",
+    "tags": ["RPG", "Strategy", "Board Game", "Action", "Strategy RPG", "Action RPG", "Tactical RPG", "Medieval", "Hex Grid", "Adventure", "Isometric", "Tactical", "Deckbuilding", "Tabletop", "Singleplayer", "Real Time Tactics", "Real-Time", "Beautiful", "3D", "Atmospheric"],
+    "price": "62.00 AED",
+    "sentiment": "Mostly Positive",
+    "metascore": 68,
+    "early_access": false,
+    "short_description": "Wartile is a cool-down based strategy game in which you control a warband of Viking figurines in a miniature universe inspired by Norse mythology. Unravel its secrets and rein the powers of the gods.",
+    "long_description": ["<div id=\"game_area_description\" class=\"game_area_description\">\r\n\t\t\t\t\t\t\t<h2>About This Game</h2>\r\n\t\t\t\t\t\t\t<strong>A miniature world coming to life</strong><br>Experience a living, breathing tabletop video game that invites the player into a miniature universe full of small adventures set in beautifully handcrafted diorama battle boards inspired by Norse mythology to honor the Vikings!<br><img src=\"https://cdn.cloudflare.steamstatic.com/steam/apps/404200/extras/Apng_Battleboard_Stills.png?t=1637857199\"><br><br><strong>Cool-down based combat that keeps the action flowing</strong><br>Wartile is a cool-down based game that keeps the action flowing, with ample opportunities to plan your moves. Although it contains the strategic elements from turn-based games, a mixture of slow down features and cool-down based gameplay maintains the tension of battle while allowing for breathing room to make tactical decisions. At its heart, Wartile is a game about positioning and tactical decision making.<br><img src=\"https://cdn.cloudflare.steamstatic.com/steam/apps/404200/extras/Apng_Combat_Showcase_1.png?t=1637857199\"><br><br><strong>Your control the pace of battle</strong><br>With Slow Time always available you can control the speed of the fight giving you an advantageous tactical benefit in critical situations where every action counts. <br><img src=\"https://cdn.cloudflare.steamstatic.com/steam/apps/404200/extras/Apng_SlowTime_v1.png?t=1637857199\"><br><br><strong>Collect &amp; level up figurines and customize their equipment and abilities</strong><br>Collect and level up an array of different figurines. Customize your Warband with armor pieces, weapons, unique combat abilities and set up your deck of Battle Cards, to provide a choice of tactical options before they embark on each quest.<br><img src=\"https://cdn.cloudflare.steamstatic.com/steam/apps/404200/extras/Apng_Customize_V2.png?t=1637857199\">\t\t\t\t\t\t</div>"],
+    "cover_image_url": "https://cdn.akamai.steamstatic.com/steam/apps/404200/header.jpg?t=1637857199",
+    "game_image_url": "https://cdn.akamai.steamstatic.com/steam/apps/404200/ss_8b05c8bef08af6edf3a4de3b3a7431d85e4e3fb6.jpg"
+}
 ```
 
 ## Extracting the Reviews
