@@ -111,8 +111,15 @@ class ProductItem(scrapy.Item):
         output_processor=Compose(TakeFirst(), StripText(), str_to_int)
     )
     early_access = scrapy.Field()
-    short_description = scrapy.Field()
-    long_description = scrapy.Field()
+
+    short_description = scrapy.Field(
+        output_processor=Compose(TakeFirst(), StripText())
+    )
+
+    long_description = scrapy.Field(
+        output_processor=Compose(TakeFirst(), StripText())
+    )
+
     cover_image_url = scrapy.Field()
     game_image_url = scrapy.Field()
 
