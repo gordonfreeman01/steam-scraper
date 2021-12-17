@@ -1,4 +1,4 @@
-# Steam Scraper+
+# Steam Scraper Plus
 
 This repository contains [Scrapy](https://github.com/scrapy/scrapy) spiders for **crawling products** and **scraping all user-submitted reviews** from the [Steam game store](https://steampowered.com).
 A few scripts for more easily managing and deploying the spiders are included as well.
