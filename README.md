@@ -5,21 +5,27 @@ A few scripts for more easily managing and deploying the spiders are included as
 
 This repository forks and extends the code accompanying the *Scraping the Steam Game Store* article published on the [Scrapinghub blog](https://blog.scrapinghub.com/2017/07/07/scraping-the-steam-game-store-with-scrapy/) and the [Intoli blog](https://intoli.com/blog/steam-scraper/).
 
-The focus of this scraper is on fetching game product page metadata that works with the latest layout of Steam.
+The focus of this scraper is to fetch game product page metadata compatible with the latest layout of Steam.
 
-Compared to original crawler, here are the differences:
+Compared to the original crawler, this version contains:
 * Fixes:
-  - Developer, publisher, release date fields work correctly
-  - Developer and publisher fields support lists of values in each field (as with current Steam layout)
-  - Fixed using the steamid parameter in the product crawler to fetch just that page
+  - Developer, publisher, release date fields populate correctly
+  - Developer and publisher fields support lists of values in each field
+  - Using the steamid parameter in the product crawler to fetch just one product page by ID now works correctly
 
-* Additions
-  - Added short_description, long_description, cover_image_url and game_image_url fields
-  - Added url_file parameter to product crawler
+* Additions:
+  - Fields added:
+    - short_description
+    - long_description
+    - cover_image_url
+    - game_image_url 
+  - Parameters added:
+    - In product crawler:
+      - url_file
 
 * Minor enhancements:
-  - Resolved deprecation warnings for scrapy import on the Product spider 
-  - Gitignore file extended to ignore various relevant temporary files
+  - Resolved deprecation warnings for scrapy import on the Product spider
+  - Gitignore file extended to ignore various temporary files
 
 ## Installation
 
